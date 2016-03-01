@@ -1,0 +1,72 @@
+<html>
+<head>
+
+<B> Formulario Ingreso de Persona Nueva </B>
+
+
+</head>
+<body>
+
+<script type="text/javascript">
+
+
+//Metodo que obtiene los valores ingresados en los campos de texto y los imuestra
+function mostrar(){
+  var d_id=document.getElementById('Doc_id').value;
+  var nom=document.getElementById('Nombre').value;
+  var gen=document.getElementById('Genero').value;
+  var corr=document.getElementById('Correo').value;
+  var tel=document.getElementById('Tel').value;
+  var cel=document.getElementById('Cel').value;
+  var c_tar=document.getElementById('Cod_tar').value;
+  var c_univ=document.getElementById('Cod_univ').value;
+
+  alert('Ingresó a:  '+d_id+' '+nom+' '+gen+' '+corr+' '+tel+' '+cel+' '+c_tar+' '+c_univ);
+}
+</script>
+
+<script type="text/javascript">
+function soloNumeros(e)
+{
+   var keynum = window.event ? window.event.keyCode : e.which;
+   if ((keynum == 8) || (keynum == 46))
+        return true;
+    return /\d/.test(String.fromCharCode(keynum));
+}
+</script>
+
+<script type="text/javascript">
+function validarLetras(e) { // 1
+tecla = (document.all) ? e.keyCode : e.which; // 2
+if (tecla==8) return true; // 3
+patron =/[A-Za-z\s]/; // 4
+te = String.fromCharCode(tecla); // 5
+return patron.test(te); // 6
+}
+</script>
+
+<form>
+<br>
+Ingrese su documento de identidad:
+<input type="text" id="Doc_id" maxlength="12" onkeypress="return soloNumeros(event);"><br><br>
+Ingrese su nombre:
+<input type="text" id="Nombre" onkeypress="return validarLetras(event)"><br><br>
+Ingrese su genero:
+<input type="text" id="Genero"><br><br>
+Ingrese su correo:
+<input type="text" id="Correo"><br><br>
+Ingrese su telefono fijo:
+<input type="text" id="Tel" onkeypress="return soloNumeros(event);"><br><br>
+Ingrese su celular:
+<input type="text" id="Cel" onkeypress="return soloNumeros(event);"><br><br>
+Ingrese el codigo de la tarjeta:
+<input type="text" id="Cod_tar" maxlength="4" onkeypress="return soloNumeros(event);"><br><br>
+Ingrese el codigo de la universidad:
+<input type="text" id="Cod_univ" maxlength="12" onkeypress="return soloNumeros(event);"><br><br>
+
+
+<input type="button" value="Guardar" onClick="mostrar()">
+</form>
+
+</body>
+</html>
