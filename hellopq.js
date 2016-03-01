@@ -1,5 +1,5 @@
 var pg = require('pg');
-var conString = "postgres://postgres:macbook13@localhost:5432/postgres";
+var conString = "postgres://postgres:password@localhost:5432/postgres";
 
 //this initializes a connection pool
 //it will keep idle connections open for a (configurable) 30 seconds
