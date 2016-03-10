@@ -1,10 +1,12 @@
 var express = require('express');
 var router = express.Router();
 var pg = require('pg');
-var conString = "postgres://postgres:password@localhost:5432/RFID";
+var conString = "postgres://postgres:macbook13@localhost:5432/RFID";
+var path = require('path');
+
 /* GET home page. */
 router.get('/', function(req, res, next) {
-  res.render('index', { title: 'Express' });
+  res.sendFile(path.join(__dirname, '../views', 'index.html'));
 });
 
 module.exports = router;
@@ -14,7 +16,8 @@ router.post('/api/v1/RFID', function(req, res) {
     var results = [];
 
     // Grab data from http request
-    var data = {doc_id: req.body.text,
+    var data = {
+      doc_id: req.body.text,
       nom: req.body.text,
       genero: req.body.text,
       correo: req.body.text,
@@ -22,20 +25,18 @@ router.post('/api/v1/RFID', function(req, res) {
       cel: req.body.text,
       cod_tarjeta: req.body.text,
       cod_universidad: req.body.text
-      };
+    };
 
     // Get a Postgres client from the connection pool
-    pg.connect(connectionString, function(err, client, done) {
+    pg.connect(conString, function(err, client, done) {
         // Handle connection errors
         if(err) {
           done();
           console.log(err);
           return res.status(500).json({ success: false, data: err});
         }
-        client.query("select ingresar_persona($1, $2, $3, $4, $5, $6, $7, $8)",
-        [data.doc_id, data.nom, data.genero, data.correo, data.tel, data.cel, data.cod_tarjeta, data.cod_universidad]);
-        // SQL Query > Insert Data
-        //client.query("INSERT INTO items(text, complete) values($1, $2)", [data.text, data.complete]);
+        client.query("INSERT INTO persona(doc_id, nombre, genero, correo, tel, cel, cod_tarjeta, cod_universidad) values($1, $2, $3, $4, $5, $6, $7, $8)",
+          [data.doc_id, data.nom, data.genero, data.correo, data.tel, data.cel, data.cod_tarjeta, data.cod_universidad]);
         // SQL Query > Select Data
         var query = client.query("SELECT * FROM personas");
 
@@ -52,3 +53,5 @@ router.post('/api/v1/RFID', function(req, res) {
 
     });
 });
+//curl --data "doc_id=1018218462&nom=false&genero=masc&correo=dfasf&tel=3653&cel=754&cod_tarjeta=5432&cod_universidad=875" http://127.0.0.1:3000/api/v1/RFID 
+
