@@ -18,7 +18,7 @@ router.post('/api/v1/RFID', function(req, res) {
     // Grab data from http request
     var data = {
       doc_id: req.body.doc_id,
-      nom: req.body.nom,
+      nombre: req.body.nombre,
       genero: req.body.genero,
       correo: req.body.correo,
       tel: req.body.tel,
@@ -35,10 +35,16 @@ router.post('/api/v1/RFID', function(req, res) {
           console.log(err);
           return res.status(500).json({ success: false, data: err});
         }
-        client.query("INSERT INTO persona(doc_id, nombre, genero, correo, tel, cel, cod_tarjeta, cod_universidad) values($1, $2, $3, $4, $5, $6, $7, $8)",
-          [data.doc_id, data.nom, data.genero, data.correo, data.tel, data.cel, data.cod_tarjeta, data.cod_universidad]);
+        var query = client.query({
+             text: "select ingresar_persona($1, $2, $3, $4, $5, $6, $7, $8)",
+             values: [data.doc_id, data.nombre, data.genero, data.correo, data.tel, data.cel, data.cod_tarjeta, data.cod_universidad]});
+        query.on('row', function(row) {
+                  results.push(row);
+                });
+        //client.query("INSERT INTO persona(doc_id, nombre, genero, correo, tel, cel, cod_tarjeta, cod_universidad) values($1, $2, $3, $4, $5, $6, $7, $8)",
+          //[data.doc_id, data.nom, data.genero, data.correo, data.tel, data.cel, data.cod_tarjeta, data.cod_universidad]);
         // SQL Query > Select Data
-        var query = client.query("SELECT * FROM persona");
+        //var query = client.query("SELECT * FROM persona");
 
         // Stream results back one row at a time
         query.on('row', function(row) {
