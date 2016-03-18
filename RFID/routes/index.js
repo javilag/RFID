@@ -1,7 +1,7 @@
 var express = require('express');
 var router = express.Router();
 var pg = require('pg');
-var conString = "postgres://postgres:macbook13@localhost:5432/RFID";
+var conString = "postgres://postgres:password@localhost:5432/RFID";
 var path = require('path');
 
 /* GET home page. */
@@ -53,5 +53,4 @@ router.post('/api/v1/RFID', function(req, res) {
 
     });
 });
-//curl --data "doc_id=1018218462&nom=false&genero=masc&correo=dfasf&tel=3653&cel=754&cod_tarjeta=5432&cod_universidad=875" http://127.0.0.1:3000/api/v1/RFID 
-
+//curl --data "doc_id=1018218462&nom=false&genero=masc&correo=dfasf&tel=3653&cel=754&cod_tarjeta=5432&cod_universidad=875" http://127.0.0.1:3000/api/v1/RFID
