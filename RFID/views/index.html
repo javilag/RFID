@@ -20,6 +20,37 @@
         </div>
         <button type="submit" class="btn btn-primary btn-lg" ng-click="createPersona(persona)">Add persona</button>
       </form>
+      <input id="search" size="40" type="search" placeholder="Introduzca los parametros de busqueda" ng-model= "search" id= "search"/>
+      <table id= "showit">
+      <tbody>
+        <tr>
+          <td>Doc_Id</td>
+          <td>nombre</td>
+          <td>genero</td>
+          <td>correo</td>
+          <td>tel</td>
+          <td>cel</td>
+          <td>cod_tarjeta</td>
+          <td>cod_universidad</td>
+        </tr>
+        <tr ng-repeat= "persona in cargaPersona | filter:search">
+          <td>{{persona.doc_id}}</td>
+          <td>{{persona.nombre}}</td>
+          <td>{{persona.genero}}</td>
+          <td>{{persona.correo}}</td>
+          <td>{{persona.tel}}</td>
+          <td>{{persona.cel}}</td>
+          <td>{{persona.cod_tarjeta}}</td>
+          <td>{{persona.cod_universidad}}</td>
+        </tr>
+      </tbody>
+    </table>
+    <form novalidate class="simple-form">
+        <div class="form-group">
+          <input type="text" class="form-control input-lg"placeholder="Borrar persona por Nombre" ng-model= "persona.nombre">
+          <button type="submit" class="btn btn-primary btn-lg" ng-click="deletePersona(persona)">Delete persona</button>
+        </div>
+    </form>
     </div>
     <script src="http://code.jquery.com/jquery-1.11.2.min.js" type="text/javascript"></script>
     <script src="http://netdna.bootstrapcdn.com/bootstrap/3.3.1/js/bootstrap.min.js" type="text/javascript"></script>
