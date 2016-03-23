@@ -1,7 +1,7 @@
 var express = require('express');
 var router = express.Router();
 var pg = require('pg');
-var conString = "postgres://postgres:macbook13@localhost:5432/RFID";
+var conString = "postgres://postgres:password@localhost:5432/RFID";
 var path = require('path');
 
 /* GET home page. */
@@ -17,14 +17,14 @@ router.post('/api/v1/RFID', function(req, res) {
 
     // Grab data from http request
     var data = {
-      doc_id: req.body.text,
-      nom: req.body.text,
-      genero: req.body.text,
-      correo: req.body.text,
-      tel: req.body.text,
-      cel: req.body.text,
-      cod_tarjeta: req.body.text,
-      cod_universidad: req.body.text
+      doc_id: req.body.doc_id,
+      nombre: req.body.nombre,
+      genero: req.body.genero,
+      correo: req.body.correo,
+      tel: req.body.tel,
+      cel: req.body.cel,
+      cod_tarjeta: req.body.cod_tarjeta,
+      cod_universidad: req.body.cod_universidad
     };
 
     // Get a Postgres client from the connection pool
@@ -35,10 +35,16 @@ router.post('/api/v1/RFID', function(req, res) {
           console.log(err);
           return res.status(500).json({ success: false, data: err});
         }
-        client.query("INSERT INTO persona(doc_id, nombre, genero, correo, tel, cel, cod_tarjeta, cod_universidad) values($1, $2, $3, $4, $5, $6, $7, $8)",
-          [data.doc_id, data.nom, data.genero, data.correo, data.tel, data.cel, data.cod_tarjeta, data.cod_universidad]);
+        var query = client.query({
+             text: "select ingresar_persona($1, $2, $3, $4, $5, $6, $7, $8)",
+             values: [data.doc_id, data.nombre, data.genero, data.correo, data.tel, data.cel, data.cod_tarjeta, data.cod_universidad]});
+        query.on('row', function(row) {
+                  results.push(row);
+                });
+        //client.query("INSERT INTO persona(doc_id, nombre, genero, correo, tel, cel, cod_tarjeta, cod_universidad) values($1, $2, $3, $4, $5, $6, $7, $8)",
+          //[data.doc_id, data.nom, data.genero, data.correo, data.tel, data.cel, data.cod_tarjeta, data.cod_universidad]);
         // SQL Query > Select Data
-        var query = client.query("SELECT * FROM personas");
+        //var query = client.query("SELECT * FROM persona");
 
         // Stream results back one row at a time
         query.on('row', function(row) {
@@ -53,5 +59,4 @@ router.post('/api/v1/RFID', function(req, res) {
 
     });
 });
-//curl --data "doc_id=1018218462&nom=false&genero=masc&correo=dfasf&tel=3653&cel=754&cod_tarjeta=5432&cod_universidad=875" http://127.0.0.1:3000/api/v1/RFID 
-
+//curl --data "doc_id=1018218462&nom=false&genero=masc&correo=dfasf&tel=3653&cel=754&cod_tarjeta=5432&cod_universidad=875" http://127.0.0.1:3000/api/v1/RFID

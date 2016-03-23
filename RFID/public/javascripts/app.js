@@ -2,7 +2,6 @@
 angular.module('RFID', [])
 
 .controller('mainController', function($scope, $http) {
-    $scope.master = {};
     $scope.persona = {};
     $scope.createPersona = function(persona) {
         $http.post('/api/v1/RFID', $scope.persona)
