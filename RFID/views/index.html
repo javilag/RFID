@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html ng-app= "RFID">
   <head>
-    <title>Todo App - with Node + Express + Angular + PostgreSQL</title>
+    <title>RFID</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link href="http://netdna.bootstrapcdn.com/bootstrap/3.3.1/css/bootstrap.min.css" rel="stylesheet" media="screen">
   </head>
@@ -9,7 +9,7 @@
     <div class="container">
       <form novalidate class="simple-form">
         <div class="form-group">
-          <input type="number" class="form-control input-lg"placeholder="Add a doc_id..." ng-model= "persona.doc_id">
+          <input type="text" class="form-control input-lg"placeholder="Add a doc_id..." ng-model= "persona.doc_id">
           <input type="text" class="form-control input-lg" placeholder="Add a nombre..." ng-model= "persona.nombre">
           <input type="text" class="form-control input-lg" placeholder="Add a genero..." ng-model= "persona.genero">
           <input type="text" class="form-control input-lg" placeholder="Add a correo..." ng-model= "persona.correo">
@@ -24,13 +24,13 @@
       <table id= "showit">
       <tbody>
         <tr>
-          <td>Doc_Id</td>
-          <td>nombre</td>
-          <td>genero</td>
-          <td>correo</td>
-          <td>tel</td>
-          <td>cel</td>
-          <td>cod_tarjeta</td>
+          <td>     Doc_Id     </td>
+          <td>     nombre     </td>
+          <td>     genero     </td>
+          <td>     correo     </td>
+          <td>      tel       </td>
+          <td>      cel       </td>
+          <td>  cod_tarjeta   </td>
           <td>cod_universidad</td>
         </tr>
         <tr ng-repeat= "persona in cargaPersona | filter:search">
@@ -47,8 +47,8 @@
     </table>
     <form novalidate class="simple-form">
         <div class="form-group">
-          <input type="text" class="form-control input-lg"placeholder="Borrar persona por Nombre" ng-model= "persona.nombre">
-          <button type="submit" class="btn btn-primary btn-lg" ng-click="deletePersona(persona)">Delete persona</button>
+          <input type="text" class="form-control input-lg" placeholder="Borrar doc_id" ng-model= "persona.doc_id">
+          <button type="submit" class="btn btn-primary btn-lg" ng-click= "deletePersona(persona)">Delete persona</button>
         </div>
     </form>
     </div>

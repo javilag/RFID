@@ -78,14 +78,17 @@ router.get('/api/v1/RFID',function(req,res){
 router.delete('/api/v1/RFID', function(req, res){
   var results =[];
   var data = {
-    nombre: req.body.doc_id
+    doc_id: req.body.doc_id
   };
   pg.connect(conString, function(err, client, done) {
       if(err) {
         done();
         console.log(err);
       }
-      var query = client.query("DELETE FROM persona WHERE nombre=($1)", [data.nombre]);
+      var query = client.query({
+             text: "select eliminarpersona($1)",
+             values: [data.doc_id]
+           });
       query.on('row', function(row) {
         results.push(row);
       });
