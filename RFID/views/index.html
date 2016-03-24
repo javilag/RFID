@@ -43,7 +43,19 @@
           <td>{{persona.cod_tarjeta}}</td>
           <td>{{persona.cod_universidad}}</td>
         </tr>
-      </tbody>
+        <tr>
+          <td>     Codigo     </td>
+          <td>     Id_Persona </td>
+          <td>     Fecha     </td>
+          <td>     tipo     </td>
+        </tr>
+        <tr ng-repeat= "registro in cargaRegistro | filter:search">
+          <td>{{registro.codigo}}</td>
+          <td>{{registro.id_persona}}</td>
+          <td>{{registro.fecha_hora}}</td>
+          <td>{{registro.tipo}}</td>
+        </tr>
+      </tbody>      
     </table>
     <form novalidate class="simple-form">
         <div class="form-group">

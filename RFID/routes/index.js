@@ -74,6 +74,23 @@ router.get('/api/v1/RFID',function(req,res){
       }); 
   });
 });
+router.get('/api/v1/RFID/rg',function(req,res){
+  var results = [];
+  pg.connect(conString, function(err, client, done) {
+      if(err) {
+        done();
+        console.log(err);
+      }
+      var query = client.query("select * from registro_en_sa"); 
+      query.on('row', function(row) {
+        results.push(row);
+      });
+      query.on('end', function() {
+        done();
+        return res.json(results);
+      }); 
+  });
+});
 
 router.delete('/api/v1/RFID', function(req, res){
   var results =[];
