@@ -1,5 +1,5 @@
 var pg = require('pg');
-var conString = "postgres://postgres:macbook13@localhost:5432/RFID";
+var conString = "postgres://postgres:password@localhost:5432/RFID";
 
 
 //this initializes a connection pool

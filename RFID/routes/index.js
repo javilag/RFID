@@ -1,7 +1,7 @@
 var express = require('express');
 var router = express.Router();
 var pg = require('pg');
-var conString = "postgres://postgres:macbook13@localhost:5432/RFID";
+var conString = "postgres://postgres:password@localhost:5432/RFID";
 var path = require('path');
 
 /* GET home page. */
@@ -64,14 +64,14 @@ router.get('/api/v1/RFID',function(req,res){
         done();
         console.log(err);
       }
-      var query = client.query("select * from persona"); 
+      var query = client.query("select * from persona");
       query.on('row', function(row) {
         results.push(row);
       });
       query.on('end', function() {
         done();
         return res.json(results);
-      }); 
+      });
   });
 });
 router.get('/api/v1/RFID/rg',function(req,res){
@@ -81,18 +81,18 @@ router.get('/api/v1/RFID/rg',function(req,res){
         done();
         console.log(err);
       }
-      var query = client.query("select * from registro_en_sa"); 
+      var query = client.query("select * from registro_en_sa");
       query.on('row', function(row) {
         results.push(row);
       });
       query.on('end', function() {
         done();
         return res.json(results);
-      }); 
+      });
   });
 });
 
-router.delete('/api/v1/RFID', function(req, res){
+router.post('/api/v1/RFID/delete', function(req, res){
   var results =[];
   var data = {
     doc_id: req.body.doc_id
@@ -112,8 +112,7 @@ router.delete('/api/v1/RFID', function(req, res){
       query.on('end', function() {
         done();
         return res.json(results);
-      }); 
+      });
 
   });
 });
-

@@ -34,7 +34,7 @@ angular.module('RFID', [])
             });
     };
     $scope.deletePersona = function(persona) {
-    $http.delete('/api/v1/RFID', $scope.persona)
+    $http.post('/api/v1/RFID/delete', $scope.persona)
         .success(function(data) {
             $scope.persona  = {};
             $scope.persona  = data;
