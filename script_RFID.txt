@@ -19,30 +19,12 @@ INSERT INTO programa VALUES ('001', 'Ingenieria de Sistemas', 9);
 INSERT INTO programa VALUES ('002', 'Ingenieria Electronica', 10);
 INSERT INTO programa VALUES ('003', 'Tecnologia de Sistemas', 6);
 
-select * from programa order by codigo;
-select * from programa;
-
 INSERT INTO personaxprograma VALUES ('1037638826', '001', 6, null, 'Activo');
 INSERT INTO personaxprograma VALUES ('1037638827', '001', 7, null, 'Activo');
 INSERT INTO personaxprograma VALUES ('1037638828', '002', 10, 'Graduado', 'Egresado');
 INSERT INTO personaxprograma VALUES ('1037638829', '003', 3, null, 'Inactivo');
 INSERT INTO personaxprograma VALUES ('1037638828', '001', 4, null, 'Activo');
-
-SELECT * FROM personaxprograma;
-
-SELECT a.nombre, a.cod_tarjeta FROM persona AS a, personaxprograma AS b WHERE b.id_persona='1037638826'
-and b.id_persona=a.doc_id;
-
-SELECT a.nombre, a.cod_tarjeta, c.nombre FROM persona AS a, personaxprograma AS b, programa AS c WHERE b.id_persona='1037638826'
-and b.id_persona=a.doc_id and c.codigo=b.cod_programa;
-
-SELECT a.nombre, a.cod_tarjeta, c.nombre FROM persona AS a, personaxprograma AS b, programa AS c WHERE b.id_persona='1037638828'
-and b.id_persona=a.doc_id and c.codigo=b.cod_programa;
-
-
-
-
-/*********************************************************************************************************************************************************************/
+/****************************************************************/
 
 ---PROCEDIMIENTO ALMACENADO INGRESAR PERSONA
 
@@ -62,130 +44,72 @@ END;
 $$
 LANGUAGE plpgsql VOLATILE
 
-/*********************************************************************************************************************************************************************/
+/****************************************************************/
 
-CREATE OR REPLACE FUNCTION registro_persona( 
-   j_serial CHARACTER VARYING, 
-   j_fecha_hora CHARACTER VARYING)
-RETURNS void AS
+---PROCEDIMIENTO ALMACENADO ELIMINAR PERSONA----
+
+create or replace function eliminar(doc_a_eliminar character varying)
+returns void AS 
 $$
-DECLARE 
-  res_id CHARACTER VARYING;
-  res_tipo CHARACTER VARYING;
-BEGIN 
-  SELECT doc_id INTO res_id FROM persona WHERE cod_tarjeta=j_serial;
-  SELECT tipo INTO res_tipo FROM registro_en_sa WHERE id_persona=res_id and codigo = (SELECT max(codigo) from registro_en_sa);
-
- IF res_tipo !='SALIDA' THEN
-   	INSERT INTO registro_en_sa (id_persona, fecha_hora, tipo) VALUES (res_id, j_fecha_hora, 'ENTRADA');
- ELSEIF res_tipo='SALIDA' THEN
- 	INSERT INTO registro_en_sa (id_persona, fecha_hora, tipo) VALUES (res_id, j_fecha_hora, 'ENTRADA');
- ELSE
- 	INSERT INTO registro_en_sa (id_persona, fecha_hora, tipo) VALUES (res_id, j_fecha_hora, 'SALIDA');
- END IF;
-END;
-$$
-  LANGUAGE plpgsql VOLATILE
-
-
-
-
-
-
-
-
-
-
-
-CREATE OR REPLACE FUNCTION registro_persona( 
-   j_serial CHARACTER VARYING, 
-   j_fecha_hora CHARACTER VARYING)
-RETURNS void AS
-$$
-DECLARE 
-  res_id CHARACTER VARYING;
-  res_tipo CHARACTER VARYING;
-BEGIN 
-  SELECT doc_id INTO res_id FROM persona WHERE cod_tarjeta=j_serial;
-  SELECT tipo INTO res_tipo FROM registro_en_sa WHERE id_persona=res_id and codigo = (SELECT max(codigo) from registro_en_sa);
-
- IF res_tipo !='ENTRADA' THEN
-   	INSERT INTO registro_en_sa (id_persona, fecha_hora, tipo) VALUES (res_id, j_fecha_hora, 'ENTRADA');
- ELSE
- 	INSERT INTO registro_en_sa (id_persona, fecha_hora, tipo) VALUES (res_id, j_fecha_hora, 'SALIDA');
- END IF;
-END;
-$$
-  LANGUAGE plpgsql VOLATILE
-
-
-/*********************************************************************************************************************************************************************/
-
-
-~~~~~~~~~~~~~~DE AQUI PARA ABAJO NOOOOOO~~~~~~~~~~~~~~~~
-
-
---PROCEDIMIENTO ALMACENADO LLEGO PERSONA
-
-CREATE OR REPLACE FUNCTION llego_persona(serial character varying)
-  RETURNS character varying AS
-$$
-DECLARE 
-resultado CHARACTER VARYING; 
 BEGIN
-SELECT doc_id INTO resultado FROM persona WHERE cod_tarjeta=serial;
-RETURN resultado;
-END;$$
+	delete from registro_en_sa where id_persona=doc_a_eliminar;
+	delete from personaxprograma where id_persona=doc_a_eliminar;
+	delete from persona where doc_id=doc_a_eliminar;
+	
+end;
+$$
+LANGUAGE plpgsql VOLATILE 
+
+/****************************************************************/
+
+---PROCEDIMIENTO ALMACENADO REGISTRO PERSONA---
+
+CREATE OR REPLACE FUNCTION registro_persona( 
+   j_serial CHARACTER VARYING)
+RETURNS void AS
+$$
+DECLARE 
+  fechaActual date;
+  fechaActualVarying CHARACTER VARYING;
+  res_id CHARACTER VARYING;
+  res_tipo CHARACTER VARYING;
+BEGIN 
+  SELECT doc_id INTO res_id FROM persona WHERE cod_tarjeta=j_serial;
+  IF res_id != '' THEN
+	--Con el ORDER BY colocaria las Fecha en orden DESCENDENTE (04/03/2016 - 03/03/2016), con el LIMIT 1, solo coge el primero, que sería
+	--La funcion "COALESCE" valida si el primer parentesis no retorna null, asigna su respectiva consulta, si éste retorna nulo, osea 0 filas, asigna el segundo parametro, que en éste caso es ''
+	--Permitiendo así la validación correcta en el IF
+	SELECT COALESCE((select tipo FROM registro_en_sa WHERE id_persona=res_id ORDER BY codigo DESC LIMIT 1), '') INTO res_tipo;
+	fechaActual = current_timestamp;
+	--Se castea la fecha a tipo CHARACTER VARYING
+	fechaActualVarying = cast(fechaActual as CHARACTER VARYING);
+	--Si es "!= Entrada" es porque es '' (osea que es primera ves, por el if anterior y la funcion "COALESCE") o es 'SALIDA' osea que va a entrar
+	IF res_tipo != 'ENTRADA' THEN
+		INSERT INTO registro_en_sa (id_persona, fecha_hora, tipo) VALUES (res_id, fechaActualVarying, 'ENTRADA');
+	--SINO es porque es 'ENTRADA' osea que va a salir
+	ELSE
+		INSERT INTO registro_en_sa (id_persona, fecha_hora, tipo) VALUES (res_id, fechaActualVarying, 'SALIDA');
+	END IF;
+  ELSE
+	--No existe no se podrá registrar
+  END IF;
+END;
+$$
   LANGUAGE plpgsql VOLATILE
+/*********************************************************************************************************************************************************************/
 
+---NOTA: Esto es lo que tenia el script anterior ( De aqui para abajo).
 
+CREATE TYPE pPersona AS (doc_id varchar(12), nombre varchar(80), genero varchar(10), correo varchar(80), tel varchar(7), cel varchar(10),
+cod_tarjeta varchar(4), cod_universidad varchar(12)); 
 
-CREATE OR REPLACE FUNCTION ingresar_entrada(
-    id_persona_fk character varying,
-    fecha_hora_entrada character varying)
-  RETURNS void AS
-$$
-INSERT INTO registro_en_sa (fecha_hora_entrada, fecha_hora_salida, id_persona) 
-VALUES (fecha_hora_entrada, null, id_persona_fk);
-$$
-  LANGUAGE sql VOLATILE
+CREATE FUNCTION cons_por_codigo(
+	doc_iden CHARACTER VARYING)
+RETURNS pPersona AS
 
+/*********************************************************************************************************************************************************************/
 
-
-
-CREATE OR REPLACE FUNCTION ingresar_salida(
-    id_persona_fk character varying,
-    fecha_hora_salida character varying)
-  RETURNS void AS
-$$
-INSERT INTO registro_en_sa (fecha_hora_entrada, fecha_hora_salida, id_persona) 
-VALUES (null, fecha_hora_salida, id_persona_fk);
-$$
-  LANGUAGE sql VOLATILE
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+------------------------------------------------------------------------
 
 PROCEDIMIENTO ALMACENADO BUSQUEDA POR PROGRAMA
 
@@ -199,40 +123,15 @@ busquedaElectronicaProcedure
 SELECT a.nombre, a.cod_tarjeta, c.nombre FROM persona AS a, personaxprograma AS b, programa AS c WHERE b.cod_programa='002'
 and b.id_persona=a.doc_id and b.cod_programa=c.codigo;
 
-------------------------------------------------------------------------
-
-PROCEDIMIENTO ALMACENADO TRAE CODIGO (VENTANA)
-
-SELECT codigo FROM programa WHERE nombre='Ingenieria de Sistemas';
-SELECT codigo FROM programa WHERE nombre='Ingenieria de Electrónica';
-SELECT codigo FROM programa WHERE nombre='Ingenieria de Electrónica';
-
-CREATE OR REPLEACE FUNCTION Procedimiento1()
+$$
 DECLARE
+	objPersona pPersona;
 BEGIN
-SELECT codigo FROM programa WHERE nombre='Ingeniería de Electrónica';
+	SELECT doc_id, nombre, genero, correo, tel, cel, cod_tarjeta, cod_universidad INTO objPersona FROM persona WHERE doc_id = doc_iden;
+	RETURN objPersona;
 END;
-...
+$$
+LANGUAGE plpgsql;
+/****************************************************************/
 
 
-CREATE OR REPLACE FUNCTION codigo_ventana()
-RETURNS varchar AS $$
-BEGIN
-SELECT codigo FROM programa WHERE nombre='Ingeniería de Sistemas';
-SELECT codigo FROM programa WHERE nombre='Ingeniería de Electrónica';
-SELECT codigo FROM programa WHERE nombre='Ingeniería de Electrónica';
-END;
-$$ LANGUAGE plpgsql
-
-
-
-consultarpersona(codigo as character varying)
-BEGIN
-SELECT
-END
-
-
-PA_REGISTRAR_ENTRADA(identidad_per character)
-
-IF (identidad_persona IN registro
-INSERT INTO registro_en_sa (codigo, fecha_hora_entrada, fecha_hora_salida, id_persona) VALUES ('001', '2015/may/14 13:45:09', null, '1037638826);

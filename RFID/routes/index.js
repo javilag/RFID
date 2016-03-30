@@ -4,6 +4,8 @@ var pg = require('pg');
 var conString = "postgres://postgres:password@localhost:5432/RFID";
 var path = require('path');
 
+//var connArduino = require('/models/conn-Arduino.js');
+
 /* GET home page. */
 router.get('/', function(req, res, next) {
   res.sendFile(path.join(__dirname, '../views', 'index.html'));
@@ -116,3 +118,20 @@ router.post('/api/v1/RFID/delete', function(req, res){
 
   });
 });
+
+//router.post('/api/v1/RFID/registroEnSa', function(req, res) {
+
+//        function retornarFecha(){
+//          var fecha = new Date();
+//          var cadenaFecha=fecha.getDate()+'/'+(fecha.getMonth()+1)+'/'+(fecha.getYear()-100);
+//          var cadenaHora=fecha.getHours()+':'+fecha.getMinutes()+':'+fecha.getSeconds();
+//          return cadenaFecha+ ' ' +cadenaHora;
+//        }
+
+//      var resFecha = retornarFecha();
+
+  //    var resSerial = connArduino.recuperarDato;
+//
+//      console.log("Serial: " +resSerial);
+
+//});
