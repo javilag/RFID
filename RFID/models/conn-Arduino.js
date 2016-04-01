@@ -15,23 +15,14 @@ var myPort = new SerialPort("COM3",{
 })
 
 myPort.on('open', onOpen);
+myPort.on('data', onData);
 
 function onOpen(){
-  console.log("Open conectio&&&&&");
+  console.log("Open conection");
 }
 
-myPort.open(function () {
-   myPort.on("data", function (data) {
-     console.log("Por fin" +data); });
-   }
-
-
-
-    //Como que no está ejecutando
-
     //Intentar trasladar el post acá porque solo ejecuta una vez el post cuando se hace clic al boton del index y le esta llegando un Undefined
-    //El archivo original de index.js es desktop/trin.txt
-//Here i get code of target and is data
+
 function onData(data){
   //console.log("On data0: " + data);
         function retornarFecha(){
@@ -41,13 +32,17 @@ function onData(data){
           return cadenaFecha+ ' ' +cadenaHora;
         }
 
-      var resFecha = retornarFecha();
-      console.log(resFecha);
+        var serial = data;
 
-router.post('/api/v1/RFID/registroEnSa', function(req, res) {
+      var resFecha = retornarFecha();
+      console.log(resFecha +" "+ serial);
+
+//Este post no se ejecuta.. :(
+router.post('/api/v1/RFID/registroEnSa', function(req, res, resFecha, serial) {
       // Get a Postgres client from the connection pool
 
-
+      var data1 = req.body.serial;
+      var resFehca1 = req.body.resFecha;
       pg.connect(conString, function(err, client, done) {
           // Handle connection errors
           if(err) {
@@ -58,7 +53,7 @@ router.post('/api/v1/RFID/registroEnSa', function(req, res) {
 
           var query = client.query({
                text: "select registro_persona($1, $2)",
-               values: [data, resFecha]});
+               values: [data1, resFecha1]});
 
           query.on('row', function(row) {
                     results.push(row);
@@ -69,6 +64,7 @@ router.post('/api/v1/RFID/registroEnSa', function(req, res) {
               return res.json(results);
           });
       });
-        //  console.log("On data: " + data);
+        console.log("On data: " + data);
 });
+return data;
 }

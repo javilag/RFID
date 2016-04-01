@@ -47,13 +47,14 @@ angular.module('RFID', [])
         });
       };
 
-//      $scope.registroEnSa = function() {
-//      $http.post('/api/v1/RFID/registroEnSa', $scope.registro)
-//      .success(function(data) {
-//        console.log(data);
-//      })
-//      .error(function(error) {
-//        console.log('Error: ' + error);
-//  });
-//};
+//post de el registro de entrada y salida
+      $scope.registroEnSa = function() {
+      $http.post('/api/v1/RFID/registroEnSa', $scope.registro)
+      .success(function(data) {
+        console.log(data);
+      })
+      .error(function(error) {
+        console.log('Error: ' + error);
+  });
+};
 });

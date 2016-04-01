@@ -5,70 +5,84 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link href="http://netdna.bootstrapcdn.com/bootstrap/3.3.1/css/bootstrap.min.css" rel="stylesheet" media="screen">
   </head>
-  <body ng-controller="mainController">
-    <div class="container">
-      <form novalidate class="simple-form">
-        <div class="form-group">
-          <input type="text" class="form-control input-lg"placeholder="Add a doc_id..." ng-model= "persona.doc_id">
-          <input type="text" class="form-control input-lg" placeholder="Add a nombre..." ng-model= "persona.nombre">
-          <input type="text" class="form-control input-lg" placeholder="Add a genero..." ng-model= "persona.genero">
-          <input type="text" class="form-control input-lg" placeholder="Add a correo..." ng-model= "persona.correo">
-          <input type="number" class="form-control input-lg" placeholder="Add a tel..." ng-model= "persona.tel">
-          <input type="number" class="form-control input-lg" placeholder="Add a cel..." ng-model= "persona.cel">
-          <input type="number" class="form-control input-lg" placeholder="Add a cod_tarjeta..." ng-model= "persona.cod_tarjeta">
-          <input type="number" class="form-control input-lg" placeholder="Add a cod_universidad..." ng-model= "persona.cod_universidad">
-        </div>
-        <button type="submit" class="btn btn-primary btn-lg" ng-click="createPersona(persona)">Add persona</button>
-      </form>
-      <br>
-      <input id="search" size="40" type="search" placeholder="Introduzca los parametros de busqueda" ng-model= "search" id= "search"/>
-      <br>
-      <br>
-      <table id= "showit"  border="1" width="80%" height="80%">
-        <tr>
-          <td><b>    Doc_Id     </b></td>
-          <td><b>     Nombre    </b></td>
-          <td><b>     Genero    </b></td>
-          <td><b>     Correo    </b></td>
-          <td><b>      Tel      </b></td>
-          <td><b>      Cel      </b></td>
-          <td><b>  Cod_tarjeta  </b></td>
-          <td><b> Cod_universidad </b></td>
 
-        </tr>
-        <tr ng-repeat= "persona in cargaPersona | filter:search">
-          <td>{{persona.doc_id}}</td>
-          <td>{{persona.nombre}}</td>
-          <td>{{persona.genero}}</td>
-          <td>{{persona.correo}}</td>
-          <td>{{persona.tel}}</td>
-          <td>{{persona.cel}}</td>
-          <td>{{persona.cod_tarjeta}}</td>
-          <td>{{persona.cod_universidad}}</td>
-        </tr>
-      </table>
-      <br>
-      <table id= "showit"  border="1" width="80%" height="80%">
-        <tr>
-          <td><b>     Codigo     </b></td>
-          <td><b>     Id_Persona </b></td>
-          <td><b>     Fecha      </b></td>
-          <td><b>     Tipo       </b></td>
-        </tr>
-        <tr ng-repeat= "registro in cargaRegistro | filter:search">
-          <td>{{registro.codigo}}</td>
-          <td>{{registro.id_persona}}</td>
-          <td>{{registro.fecha_hora}}</td>
-          <td>{{registro.tipo}}</td>
-        </tr>
-      </table>
-      <br>
-    <form novalidate class="simple-form">
-        <div class="form-group">
-          <input type="text" class="form-control input-lg" placeholder="Borrar doc_id" ng-model= "persona.doc_id">
-          <button type="submit" class="btn btn-primary btn-lg" ng-click= "deletePersona(persona)">Delete persona</button>
-        </div>
-    </form>
+  <body ng-controller="mainController">
+    <header> <center><h1><b>Aplicacion RFID</b></h1></center> </header>
+    <div class="container">
+      <section>
+        <article>
+          <h3><b>Ingreso de Persona Nueva:</b></h3>
+          <form novalidate class="simple-form">
+            <div class="form-group">
+              <input type="text" class="form-control input-lg"placeholder="Add a doc_id..." ng-model= "persona.doc_id">
+              <input type="text" class="form-control input-lg" placeholder="Add a nombre..." ng-model= "persona.nombre">
+              <input type="text" class="form-control input-lg" placeholder="Add a genero..." ng-model= "persona.genero">
+              <input type="text" class="form-control input-lg" placeholder="Add a correo..." ng-model= "persona.correo">
+              <input type="text" class="form-control input-lg" placeholder="Add a tel..." ng-model= "persona.tel">
+              <input type="text" class="form-control input-lg" placeholder="Add a cel..." ng-model= "persona.cel">
+              <input type="text" class="form-control input-lg" placeholder="Add a cod_tarjeta..." ng-model= "persona.cod_tarjeta">
+              <input type="text" class="form-control input-lg" placeholder="Add a cod_universidad..." ng-model= "persona.cod_universidad">
+            </div>
+            <button type="submit" class="btn btn-primary btn-lg" ng-click="createPersona(persona)">Add persona</button>
+          </form>
+      </article>
+        <br>
+        <article>
+          <h3><b>Consultar Personas:</b></h3>
+          <input id="search" size="40" type="search" placeholder="Introduzca los parametros de busqueda" ng-model= "search" id= "search"/>
+          <br>
+          <br>
+          <table id= "showit"  border="1" width="80%" height="80%">
+            <tr>
+              <td><b>     Doc_Id     </b></td>
+              <td><b>     Nombre    </b></td>
+              <td><b>     Genero    </b></td>
+              <td><b>     Correo    </b></td>
+              <td><b>      Tel      </b></td>
+              <td><b>      Cel      </b></td>
+              <td><b>  Cod_tarjeta  </b></td>
+              <td><b> Cod_universidad </b></td>
+
+            </tr>
+            <tr ng-repeat= "persona in cargaPersona | filter:search">
+              <td>{{persona.doc_id}}</td>
+              <td>{{persona.nombre}}</td>
+              <td>{{persona.genero}}</td>
+              <td>{{persona.correo}}</td>
+              <td>{{persona.tel}}</td>
+              <td>{{persona.cel}}</td>
+              <td>{{persona.cod_tarjeta}}</td>
+              <td>{{persona.cod_universidad}}</td>
+            </tr>
+          </table>
+        </article>
+        <br>
+        <article>
+          <table id= "showit"  border="1" width="80%" height="80%">
+            <tr>
+              <td><b>     Id_Persona </b></td>
+              <td><b>     Fecha      </b></td>
+              <td><b>     Tipo       </b></td>
+            </tr>
+            <tr ng-repeat= "registro in cargaRegistro | filter:search">
+              <td>{{registro.id_persona}}</td>
+              <td>{{registro.fecha_hora}}</td>
+              <td>{{registro.tipo}}</td>
+            </tr>
+          </table>
+        </article>
+        <br>
+        <article>
+          <h3><b>Eliminar Persona:</b></h3>
+          <form novalidate class="simple-form">
+            <div class="form-group">
+              <input type="text" class="form-control input-lg" placeholder="Borrar doc_id" ng-model= "persona.doc_id">
+              <br>
+              <button type="submit" class="btn btn-primary btn-lg" ng-click= "deletePersona(persona)">Delete persona</button>
+            </div>
+          </form>
+        </article>
+      </section>
     </div>
     <script src="http://code.jquery.com/jquery-1.11.2.min.js" type="text/javascript"></script>
     <script src="http://netdna.bootstrapcdn.com/bootstrap/3.3.1/js/bootstrap.min.js" type="text/javascript"></script>
