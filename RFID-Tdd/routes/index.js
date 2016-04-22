@@ -1,8 +1,9 @@
 var express = require('express');
+var path = require('path');
 var router = express.Router();
 var pg = require('pg');
-var conString = require(path.join(__dirname, '../', '../', 'configURL'));
-var path = require('path');
+var conString = require(path.join(__dirname, '../', '../', 'RFID-Tdd/configURL'));
+
 
 //var connArduino = require('../models/conn-Arduino.js');
 
