@@ -1,11 +1,11 @@
 var express = require('express');
-var path = require('path');
 var router = express.Router();
 var pg = require('pg');
-var conString = require(path.join(__dirname, '../', '../', 'RFID-Tdd/configURL'));
+var path = require('path');
+var conString = require(path.join(__dirname, '../', '../', 'RFID-Tdd/models/database.js'));
 
 
-//var connArduino = require('../models/conn-Arduino.js');
+//var connDB = require('../models/database.js');
 
 /* GET home page. */
 
@@ -14,7 +14,7 @@ router.get('/', function(req, res, next) {
 });
 
 router.get('/Ingreso', function(req, res, next) {
-  res.sendFile(path.join(__dirname, '../views', 'index.html'));
+  res.sendFile(path.join(__dirname, '../views', 'ingresoPersona.html'));
 });
 
 router.get('/Consultar', function(req, res, next) {
@@ -31,7 +31,8 @@ router.get('/Analisis', function(req, res, next) {
 
 module.exports = router;
 
-router.post('/api/v1/RFID', function(req, res) {
+//post que envía la información del nuevo usuario
+router.post('/api/v1/RFID/create', function(req, res) {
 
     var results = [];
 
@@ -58,7 +59,7 @@ router.post('/api/v1/RFID', function(req, res) {
         }
         var query = client.query({
              text: "select ingresar_persona($1, $2, $3, $4, $5, $6, $7, $8, $9)",
-             values: [data.doc_id, data.nombre, data.genero, data.correo, data.programa, data.tel, data.cel, data.cod_tarjeta, data.cod_universidad]});
+             values: [data.doc_id, data.nombre, data.genero, data.correo, data.tel, data.cel, data.cod_tarjeta, data.cod_universidad, data.programa]});
         //client.query("INSERT INTO persona(doc_id, nombre, genero, correo, tel, cel, cod_tarjeta, cod_universidad) values($1, $2, $3, $4, $5, $6, $7, $8)",
           //[data.doc_id, data.nom, data.genero, data.correo, data.tel, data.cel, data.cod_tarjeta, data.cod_universidad]);
         // SQL Query > Select Data
@@ -78,31 +79,73 @@ router.post('/api/v1/RFID', function(req, res) {
     });
 });
 
-router.get('/api/v1/RFID',function(req,res){
-  var results = [];
-  pg.connect(conString, function(err, client, done) {
-      if(err) {
-        done();
-        console.log(err);
-      }
-      var query = client.query("select * from persona");
-      query.on('row', function(row) {
-        results.push(row);
-      });
-      query.on('end', function() {
-        done();
-        return res.json(results);
-      });
-  });
+//post que envía el doc_id para realizar la consulta
+router.post('/api/v1/RFID/enviarId', function(req, res) {
+    var results = [];
+    // Grab data from http request
+    var data = {
+      doc_id: req.body.doc_id};
+
+    // Get a Postgres client from the connection pool
+    pg.connect(conString, function(err, client, done) {
+        // Handle connection errors
+        if(err) {
+          done();
+          console.log(err);
+          return res.status(500).json({ success: false, data: err});
+        }
+        var query = client.query({
+          text: "select consultar_persona($1)",
+            values: [data.doc_id]});
+
+//        var query = client.query("SELECT * FROM persona WHERE doc_id");
+
+        // Stream results back one row at a time
+        query.on('row', function(row, result) {
+            result.addRow(row);
+            //results.push(row);
+            console.log(result.rows[0]);
+            results = result.rows[0];
+        });
+
+        // After all data is returned, close connection and return results
+        query.on('end', function() {
+            done();
+            return res.json(results);
+        });
+
+    });
 });
-router.get('/api/v1/RFID/rg',function(req,res){
+
+
+
+//router.get('/api/v1/RFID/showPerson',function(req,res){
+//  var results = [];
+//  pg.connect(conString, function(err, client, done) {
+//      if(err) {
+//        done();
+//        console.log(err);
+//      }
+//      var query = client.query("select * from persona");
+//      query.on('row', function(row) {
+//        results.push(row);
+//      });
+//      query.on('end', function() {
+//        done();
+//        return res.json(results);
+//      });
+//  });
+//});
+
+
+router.get('/api/v1/RFID/searchInOut',function(req,res){
   var results = [];
   pg.connect(conString, function(err, client, done) {
       if(err) {
         done();
         console.log(err);
       }
-      var query = client.query("select id_persona, fecha_hora, tipo from registro_en_sa");
+      var query = client.query("select id_persona, fecha, hora, tipo FROM registro_en_sa");
       query.on('row', function(row) {
         results.push(row);
       });

@@ -1,7 +1,3 @@
-var pg = require('pg');
-var path = require('path');
-var conString = require(path.join(__dirname, '../', '../', 'configURL'));
+var connectionString = process.env.DATABASE_URL || 'postgres://postgres:password@localhost:5432/RFID';
 
-var client = new pg.Client(conString);
-client.connect();
-query.on('end', function() { client.end(); });
+module.exports = connectionString;
