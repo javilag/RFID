@@ -18,7 +18,8 @@
           <h3><b>Consultar Persona:</b></h3>
           <div>
             <input type="text" class="form-control input-lg" placeholder="Add a Doc_id..." ng-model= "persona.doc_id">
-            <button type="submit" class="btn btn-primary btn-lg" ng-click="obtenerDocId(persona)">Buscar persona</button>
+            <button type="submit" class="btn btn-primary btn-lg" ng-click="getPerson(persona)">Buscar persona</button>
+            <button type="submit" class="btn btn-primary btn-lg" ng-click="recordInOut(persona)">Buscar registros</button>
           </div>
           <input id="search" size="40" type="search" placeholder="Introduzca los parametros de busqueda" ng-model= "search" id= "search"/>
           <br>
@@ -36,7 +37,7 @@
               <td><b> Cod_universidad </b></td>
 
             </tr>
-            <tr ng-repeat= "persona in persona">
+            <tr ng-repeat= "persona in personas">
               <td>{{persona.doc_id}}</td>
               <td>{{persona.nombre}}</td>
               <td>{{persona.genero}}</td>
