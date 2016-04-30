@@ -1,13 +1,25 @@
+CREATE TABLE Programa (codigo varchar(3) primary key, nombre varchar(80) unique);
+
+<Antigua tabla------
+CREATE TABLE Programa (codigo varchar(3) primary key, nombre varchar(80) unique, cant_semestre numeric);
+----->
+
+
 CREATE TABLE Persona (doc_id varchar(12) primary key, nombre varchar(80), genero varchar(10), correo varchar(80), tel varchar(7), cel varchar(10),
 cod_tarjeta varchar(4) unique, cod_universidad varchar(12) unique);
 
-CREATE TABLE Programa (codigo varchar(3) primary key, nombre varchar(80) unique, cant_semestre numeric);
 
-CREATE TABLE Registro_En_Sa (codigo Serial, id_persona varchar(12) references persona(doc_id), fecha_hora varchar(25), tipo varchar(7), primary key (codigo, id_persona));
+CREATE TABLE PersonaxPrograma (id_persona varchar (12) references persona(doc_id), cod_programa varchar(3) references programa(codigo), primary key (id_persona, cod_programa));
 
+<Antigua tabla------
 CREATE TABLE PersonaxPrograma (id_persona varchar (12) references persona(doc_id), 
 cod_programa varchar(3) references programa(codigo), ultimo_semestre numeric, titulacion varchar(10), estado varchar(10), 
 primary key (id_persona, cod_programa));
+----->
+
+
+CREATE TABLE Registro_En_Sa (codigo Serial, id_persona varchar(12) references persona(doc_id), fecha varchar(20),  hora varchar(20), tipo varchar(7), id_programa varchar(3) references programa(codigo), primary key (codigo, id_persona));
+
 
 INSERT INTO persona VALUES ('1037638826', 'Juan Jose', 'Masculino', 'juanjo-805@hotmail.com', '3336213', '3046518850', '0001', '201217021010');
 INSERT INTO persona VALUES ('1037638827', 'Carlos', 'Masculino', 'carlos@hotmail.com', '3346213', '3036518850', '0002', '201317021010');
@@ -15,20 +27,25 @@ INSERT INTO persona VALUES ('1037638828', 'Jorge', 'Masculino', 'jorge@hotmail.c
 INSERT INTO persona VALUES ('1037638829', 'Omar', 'Masculino', 'omar@hotmail.com', '3366213', '3046518850', '0004', '201337021010');
 INSERT INTO persona VALUES ('1037638830', 'Adriana', 'Femenino', 'adriana@hotmail.com', '3376213', '3056518850', '0005', '201347021010');
 
-INSERT INTO programa VALUES ('001', 'Ingenieria de Sistemas', 9);
-INSERT INTO programa VALUES ('002', 'Ingenieria Electronica', 10);
-INSERT INTO programa VALUES ('003', 'Tecnologia de Sistemas', 6);
+INSERT INTO programa VALUES ('001', 'Ingeniería de Sistemas');
+INSERT INTO programa VALUES ('002', 'Ingeniería Electrónica');
+INSERT INTO programa VALUES ('003', 'Tecnología de Sistemas');
+INSERT INTO programa VALUES ('004', 'Psicología');
+INSERT INTO programa VALUES ('005', 'Derecho');
+INSERT INTO programa VALUES ('006', 'Administración de Negocios Internacionales');
+INSERT INTO programa VALUES ('003', 'Contaduría Pública');
 
-INSERT INTO personaxprograma VALUES ('1037638826', '001', 6, null, 'Activo');
-INSERT INTO personaxprograma VALUES ('1037638827', '001', 7, null, 'Activo');
+
+INSERT INTO personaxprograma VALUES ('1037638826', '001');
+INSERT INTO personaxprograma VALUES ('1037638827', '001');
 INSERT INTO personaxprograma VALUES ('1037638828', '002', 10, 'Graduado', 'Egresado');
 INSERT INTO personaxprograma VALUES ('1037638829', '003', 3, null, 'Inactivo');
 INSERT INTO personaxprograma VALUES ('1037638828', '001', 4, null, 'Activo');
-/****************************************************************/
+/*********************************************************************************************************************************************************************/
 
 ---PROCEDIMIENTO ALMACENADO INGRESAR PERSONA
 
-CREATE OR REPLACE FUNCTION "ingresar_persona"(
+CREATE OR REPLACE FUNCTION ingresar_persona(
     doc_id character varying,
     nom character varying,
     gene character varying,
@@ -36,69 +53,63 @@ CREATE OR REPLACE FUNCTION "ingresar_persona"(
     tel character varying,
     cel character varying,
     cod_tarj character varying,
-    cod_univ character varying)
+    cod_univ character varying,
+    cod_programa character varying)
 RETURNS void AS
-$$BEGIN
+$$
+BEGIN
 INSERT INTO persona (doc_id, nombre, genero, correo, tel, cel, cod_tarjeta, cod_universidad) VALUES (doc_id, nom, gene, correo, tel, cel, cod_tarj, cod_univ);
+EXECUTE ingresar_personaxprograma(doc_id, cod_programa);
 END;
 $$
 LANGUAGE plpgsql VOLATILE
 
-/****************************************************************/
 
----PROCEDIMIENTO ALMACENADO ELIMINAR PERSONA----
+/*********************************************************************************************************************************************************************/
 
-create or replace function eliminar(doc_a_eliminar character varying)
-returns void AS 
+CREATE OR REPLACE FUNCTION ingresar_personaxprograma(
+    doc_id character varying,
+    id_programa character varying)
+RETURNS void AS
 $$
 BEGIN
-	delete from registro_en_sa where id_persona=doc_a_eliminar;
-	delete from personaxprograma where id_persona=doc_a_eliminar;
-	delete from persona where doc_id=doc_a_eliminar;
-	
-end;
+INSERT INTO personaxprograma (id_persona, cod_programa) VALUES (doc_id, id_programa);
+END;
 $$
-LANGUAGE plpgsql VOLATILE 
+LANGUAGE plpgsql VOLATILE
 
-/****************************************************************/
-
----PROCEDIMIENTO ALMACENADO REGISTRO PERSONA---
+/*********************************************************************************************************************************************************************/
 
 CREATE OR REPLACE FUNCTION registro_persona( 
-   j_serial CHARACTER VARYING)
+   j_serial CHARACTER VARYING, 
+   j_fecha CHARACTER VARYING,
+   j_hora CHARACTER VARYING)
 RETURNS void AS
 $$
 DECLARE 
-  fechaActual date;
-  fechaActualVarying CHARACTER VARYING;
   res_id CHARACTER VARYING;
   res_tipo CHARACTER VARYING;
+  res_idPrograma CHARACTER VARYING;
 BEGIN 
   SELECT doc_id INTO res_id FROM persona WHERE cod_tarjeta=j_serial;
-  IF res_id != '' THEN
-	--Con el ORDER BY colocaria las Fecha en orden DESCENDENTE (04/03/2016 - 03/03/2016), con el LIMIT 1, solo coge el primero, que sería
-	--La funcion "COALESCE" valida si el primer parentesis no retorna null, asigna su respectiva consulta, si éste retorna nulo, osea 0 filas, asigna el segundo parametro, que en éste caso es ''
-	--Permitiendo así la validación correcta en el IF
-	SELECT COALESCE((select tipo FROM registro_en_sa WHERE id_persona=res_id ORDER BY codigo DESC LIMIT 1), '') INTO res_tipo;
-	fechaActual = current_timestamp;
-	--Se castea la fecha a tipo CHARACTER VARYING
-	fechaActualVarying = cast(fechaActual as CHARACTER VARYING);
-	--Si es "!= Entrada" es porque es '' (osea que es primera ves, por el if anterior y la funcion "COALESCE") o es 'SALIDA' osea que va a entrar
-	IF res_tipo != 'ENTRADA' THEN
-		INSERT INTO registro_en_sa (id_persona, fecha_hora, tipo) VALUES (res_id, fechaActualVarying, 'ENTRADA');
-	--SINO es porque es 'ENTRADA' osea que va a salir
-	ELSE
-		INSERT INTO registro_en_sa (id_persona, fecha_hora, tipo) VALUES (res_id, fechaActualVarying, 'SALIDA');
-	END IF;
-  ELSE
-	--No existe no se podrá registrar
-  END IF;
+  SELECT cod_programa INTO res_idPrograma FROM personaxprograma WHERE id_persona=res_id;
+  SELECT COALESCE((select tipo FROM registro_en_sa WHERE id_persona=res_id ORDER BY codigo DESC LIMIT 1), '') INTO res_tipo;
+
+ IF res_tipo = 'SALIDA' THEN
+	INSERT INTO registro_en_sa (id_persona, fecha, hora, tipo, id_programa) VALUES (res_id, j_fecha, j_hora, 'ENTRADA', res_idPrograma);
+ ELSIF res_tipo ='ENTRADA' THEN
+   	INSERT INTO registro_en_sa (id_persona, fecha, hora, tipo, id_programa) VALUES (res_id, j_fecha, j_hora, 'SALIDA', res_idPrograma);
+ ELSE
+ 	INSERT INTO registro_en_sa (id_persona, fecha, hora, tipo, id_programa) VALUES (res_id, j_fecha, j_hora, 'ENTRADA', res_idPrograma);
+ END IF;
 END;
 $$
   LANGUAGE plpgsql VOLATILE
+
+
 /*********************************************************************************************************************************************************************/
 
----NOTA: Esto es lo que tenia el script anterior ( De aqui para abajo).
+-- UTILIZAR CURSORES EN LUGAR DE TIPOS
 
 CREATE TYPE pPersona AS (doc_id varchar(12), nombre varchar(80), genero varchar(10), correo varchar(80), tel varchar(7), cel varchar(10),
 cod_tarjeta varchar(4), cod_universidad varchar(12)); 
@@ -106,23 +117,6 @@ cod_tarjeta varchar(4), cod_universidad varchar(12));
 CREATE FUNCTION cons_por_codigo(
 	doc_iden CHARACTER VARYING)
 RETURNS pPersona AS
-
-/*********************************************************************************************************************************************************************/
-
-------------------------------------------------------------------------
-
-PROCEDIMIENTO ALMACENADO BUSQUEDA POR PROGRAMA
-
-busquedaSistemasProcedure
-
-SELECT a.nombre, a.cod_tarjeta, c.nombre FROM persona AS a, personaxprograma AS b, programa AS c WHERE b.cod_programa='001'
-and b.id_persona=a.doc_id and b.cod_programa=c.codigo;
-
-busquedaElectronicaProcedure
-
-SELECT a.nombre, a.cod_tarjeta, c.nombre FROM persona AS a, personaxprograma AS b, programa AS c WHERE b.cod_programa='002'
-and b.id_persona=a.doc_id and b.cod_programa=c.codigo;
-
 $$
 DECLARE
 	objPersona pPersona;
@@ -132,6 +126,96 @@ BEGIN
 END;
 $$
 LANGUAGE plpgsql;
-/****************************************************************/
+
+/*********************************************************************************************************************************************************************/
+
+CREATE TYPE objRegistro AS (id_persona varchar(12), fecha_hora varchar(25), tipo varchar(7), id_programa varchar(3));
+
+CREATE OR REPLACE FUNCTION consultarRegistros(
+	doc_id CHARACTER VARYING)
+RETURNS SETOF objRegistro AS
+$$
+DECLARE
+	tablaRegistro objRegistro%rowtype;
+BEGIN
+	FOR tablaRegistro IN SELECT id_persona, fecha_hora, tipo, id_programa FROM registro_en_sa WHERE id_persona = doc_id LOOP
+	    RETURN NEXT tablaRegistro;
+	END LOOP;
+RETURN;
+END;
+$$
+  LANGUAGE plpgsql VOLATILE
+
+/*********************************************************************************************************************************************************************/
+
+CREATE OR REPLACE FUNCTION eliminarpersona(doc_id_eliminar character varying)
+  
+RETURNS void AS
+$$
+BEGIN 
+	DELETE FROM persona WHERE doc_id=doc_id_eliminar;
+END;
+$$
+LANGUAGE plpgsql VOLATILE
+
+/*********************************************************************************************************************************************************************/
+
+CREATE TYPE hora AS (hora_repetida varchar(10), cantidad_maxima numeric);
+
+CREATE OR REPLACE FUNCTION hora_mayor_ingreso()
+  RETURNS hora AS
+$BODY$
+DECLARE
+	objHora hora;
+BEGIN
+	SELECT substr(hora,1,2) hora_repetida, COUNT(substr(hora,1,2)) maximo 
+	INTO objHora
+	FROM registro_en_sa where tipo = 'ENTRADA'
+	GROUP BY hora_repetida
+	ORDER BY maximo DESC LIMIT 1; -- 1--> La hora que mas se repite, 2--> Las dos horas que mas...
+	RETURN objHora;
+END;
+$BODY$
+  LANGUAGE plpgsql VOLATILE
+  COST 100;
+
+/*********************************************************************************************************************************************************************/
+
+-- Utiliza el mismo type hora puesto que retorna la hora de mayor ingreso y la cantidad de veces que se repite
+
+-- Debería imprimir las 2 horas que más ingresan (LIMIT 2) pero solo imprime la primera... ¿LOOP?
+
+CREATE OR REPLACE FUNCTION reporte_mesxprograma(
+	j_cod_fecha CHARACTER VARYING,
+	j_id_programa CHARACTER VARYING)
+  RETURNS hora AS
+$$
+DECLARE
+	objHora hora;
+BEGIN
+	SELECT substr(hora,1,2) hora_repetida, COUNT(substr(hora,1,2)) maximo INTO objHora
+	FROM registro_en_sa WHERE SUBSTRING(fecha from 4 for 2) = j_cod_fecha AND id_programa = j_id_programa AND tipo='ENTRADA'
+	GROUP BY hora_repetida
+	ORDER BY maximo DESC LIMIT 2;
+	RETURN objHora;
+END;
+$$
+  LANGUAGE plpgsql VOLATILE
+  COST 100;
 
 
+
+
+
+
+
+
+ESTEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEE
+
+SELECT substr(hora,1,2) hora_repetida, COUNT(substr(hora,1,2)) maximo
+FROM registro_en_sa WHERE SUBSTRING(fecha from 4 for 2) = '04' AND id_programa = '001' AND tipo='ENTRADA' -->BORRADOR (ARREGLAR)
+GROUP BY hora_repetida
+ORDER BY maximo DESC LIMIT 2;
+
+
+SELECT id_persona FROM registro_en_sa WHERE id_programa = '001' AND tipo = 'ENTRADA';

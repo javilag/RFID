@@ -2,7 +2,7 @@ var express = require('express');
 var router = express.Router();
 var pg = require('pg');
 var path = require('path');
-var conString = require(path.join(__dirname, '../', '../', 'RFID/models/database.js'));
+var conString = require(path.join(__dirname, '../', '../', 'RFID-Tdd/models/database.js'));
 
 
 //var connDB = require('../models/database.js');
@@ -88,21 +88,21 @@ module.exports = router;
           return res.status(500).json({ success: false, data: err});
         }
         var query = client.query({
-          text: "select consultar_persona($1)",
+          text: "select * from consultar_persona3($1)",
           values: [data.doc_id]});
 
           // Stream results back one row at a time
           query.on('row', function(row, result) {
             result.addRow(row);
             //results.push(row);
-          //console.log(result.rows[0]);
+            //console.log(result.rows[0]); //Muestra los datos en el servidor
             results = result.rows[0];
           });
 
           // After all data is returned, close connection and return results
           query.on('end', function() {
             done();
-            return res.json(results);
+            console.log(res.json(results));
           });
 
       });
@@ -124,7 +124,7 @@ module.exports = router;
             return res.status(500).json({ success: false, data: err});
           }
           var query = client.query({
-            text: "select consultar_registros($1)",
+            text: "select row_to_json(consultar_registros($1))",
             values: [data.doc_id]});
 
             // Stream results back one row at a time
@@ -167,20 +167,20 @@ module.exports = router;
       });
     });
 
-          //router.get('/api/v1/RFID/showPerson',function(req,res){
-          //  var results = [];
-          //  pg.connect(conString, function(err, client, done) {
-          //      if(err) {
-          //        done();
-          //        console.log(err);
-          //      }
-          //      var query = client.query("select * from persona");
-          //      query.on('row', function(row) {
-          //        results.push(row);
-          //      });
-          //      query.on('end', function() {
-          //        done();
-          //        return res.json(results);
-          //      });
-          //  });
-          //});
+//          router.get('/api/v1/RFID/showPerson',function(req,res){
+//            var results = [];
+//            pg.connect(conString, function(err, client, done) {
+//                if(err) {
+//                  done();
+//                  console.log(err);
+//                }
+//                var query = client.query("select * from persona");
+//                query.on('row', function(row) {
+//                  results.push(row);
+//                });
+//                query.on('end', function() {
+//                  done();
+//                  return res.json(results);
+//                });
+//            });
+//          });
