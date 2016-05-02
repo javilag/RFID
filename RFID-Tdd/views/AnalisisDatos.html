@@ -15,14 +15,68 @@
       </ul>
     </nav>
     <section>
+      <div>
       <article>
         <h2>Grafica de cantidad de estudiantes</h2>
       </article>
+
+      <script>
+        $(document).ready(function() {
+
+            var lineData = {
+                labels: ["Jan 14", "Jan 16", "Jan 17", "Jan 19", "Jan 22", "Jan 20", "Jan 24"],
+                datasets: [
+                    {
+                        label: "Example dataset",
+                        fillColor: "rgba(220,220,220,0.5)",
+                        strokeColor: "rgba(220,220,220,1)",
+                        pointColor: "rgba(220,220,220,1)",
+                        pointStrokeColor: "#fff",
+                        pointHighlightFill: "#fff",
+                        pointHighlightStroke: "rgba(220,220,220,1)",
+                        data: [65, 59, 0, 81, 0, 29, 74]
+                    },
+                    {
+                        label: "Example dataset",
+                        fillColor: "rgba(26,179,148,0.5)",
+                        strokeColor: "rgba(26,179,148,0.7)",
+                        pointColor: "rgba(26,179,148,1)",
+                        pointStrokeColor: "#fff",
+                        pointHighlightFill: "#fff",
+                        pointHighlightStroke: "rgba(26,179,148,1)",
+                        data: [28, 48, 40, 0, 0, 27, 90]
+                    }
+                ]
+            };
+
+            var lineOptions = {
+                scaleShowGridLines: true,
+                scaleGridLineColor: "rgba(0,0,0,.05)",
+                scaleGridLineWidth: 1,
+                bezierCurve: true,
+                bezierCurveTension: 0.4,
+                pointDot: true,
+                pointDotRadius: 4,
+                pointDotStrokeWidth: 1,
+                pointHitDetectionRadius: 20,
+                datasetStroke: true,
+                datasetStrokeWidth: 2,
+                datasetFill: true,
+                responsive: true,
+            };
+
+
+            var ctx = document.getElementById("lineChart").getContext("2d");
+            var myNewChart = new Chart(ctx).Line(lineData, lineOptions);
+
+        });
+    </script>
+    </div>
         <article>
         <h2>Consulta de personas por programa</h2>
         <br>
         Programa:
-        <select name="programas" ng-model= "programa">
+        <select name="programas" ng-model= "personas.cod_programa">
             <option value="001">Ingenieria de Sistemas</option>
             <option value="002">Ingenieria Electronica</option>
             <option value="003">Tencologia de Sistemas</option>
@@ -32,7 +86,7 @@
             <option value="007">Contaduria Publica</option>
         </select>
         Mes:
-        <select name="mes" ng-model= "mes">
+        <select name="mes" ng-model= "personas.mes">
             <option value=" ">Seleccione Mes</option>
             <option value="01">Enero</option>
             <option value="02">Febrero</option>
@@ -47,19 +101,49 @@
             <option value="11">Noviembre</option>
             <option value="12">Diciembre</option>
         </select>
-        <button type="submit" class="btn btn-primary btn-lg" ng-click="">Consultar</button>
+        <button type="submit" class="btn btn-primary btn-lg" ng-click="showPeoplexmonth(personas)">Consultar</button>
+      </br>
       </article>
       <article>
-        <h2>Cantidad de estudiantes fuera de su jornada</h2>
+        <table id= "showit"  border="1" width="90%" height="90%">
+          <tr>
+            <td><b>     Doc_Id     </b></td>
+            <td><b>     Nombre     </b></td>
+            <td><b>     Cod_Universidad    </b></td>
+            <td><b>     Programa     </b></td>
+            <td><b>     Fecha    </b></td>
+            <td><b>     Hora    </b></td>
+          </tr>
+          <tr ng-repeat= "persona in cargPrograma.data">
+            <td>{{persona.rdoc_id}}</td>
+            <td>{{persona.rnombre}}</td>
+            <td>{{persona.rcod_universidad}}</td>
+            <td>{{persona.rprograma}}</td>
+            <td>{{persona.rfecha}}</td>
+            <td>{{persona.rhora}}</td>
+          </tr>
+        </table>
+      </article>
+      <article>
+        <h2>Reporte de las horas de mayor ingreso</h2>
+        <button type="submit" class="btn btn-primary btn-lg" ng-click="maxInHour()">Generar Reporte</button>
+        <table id= "showit"  border="1" width="50%" height="50%">
+          <tr>
+            <td><b>     Hora     </b></td>
+            <td><b>     Cantidad     </b></td>
+          </tr>
+          <tr ng-repeat= "reporteHora in cargaHora.data">
+            <td>{{reporteHora.hora_repetida}}</td>
+            <td>{{reporteHora.maximo}}</td>
+          </tr>
       </article>
     </section>
   </body>
-  <script	src="../models/Chart.min.js"> </script>
   <link rel="../public/stylesheets/style.css"></link>
   <canvas id="lineChart" height="59" width="255" style="width: 255px; height: 59px;"></canvas>
   <script src="http://code.jquery.com/jquery-1.11.2.min.js" type="text/javascript"></script>
+  <script	src="../models/Chart.min.js"> </script>
   <script src="http://netdna.bootstrapcdn.com/bootstrap/3.3.1/js/bootstrap.min.js" type="text/javascript"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/angular.js/1.3.12/angular.min.js"></script>
-  <script src="javascripts/controlador.js"></script>
-  <script src="../models/grafica.js"></script>
+  <script src="javascripts/person/controlador.js"></script>
 </html>

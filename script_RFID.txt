@@ -110,22 +110,21 @@ $$
 /*********************************************************************************************************************************************************************/
 
 -- UTILIZAR CURSORES EN LUGAR DE TIPOS
-
-CREATE TYPE pPersona AS (doc_id varchar(12), nombre varchar(80), genero varchar(10), correo varchar(80), tel varchar(7), cel varchar(10),
-cod_tarjeta varchar(4), cod_universidad varchar(12)); 
-
-CREATE FUNCTION cons_por_codigo(
-	doc_iden CHARACTER VARYING)
-RETURNS pPersona AS
-$$
-DECLARE
-	objPersona pPersona;
+CREATE OR REPLACE FUNCTION consultar_persona(IN doc_iden character varying,OUT rdoc_id VARCHAR,OUT rnombre VARCHAR,OUT rgenero VARCHAR,OUT rcorreo VARCHAR,OUT rtel VARCHAR,OUT rcel VARCHAR,OUT rcod_tarjeta VARCHAR, OUT rcod_universidad VARCHAR)
+  RETURNS SETOF record AS
+$BODY$
 BEGIN
-	SELECT doc_id, nombre, genero, correo, tel, cel, cod_tarjeta, cod_universidad INTO objPersona FROM persona WHERE doc_id = doc_iden;
-	RETURN objPersona;
+	RETURN QUERY SELECT doc_id, nombre, genero, correo, tel, cel, cod_tarjeta, cod_universidad FROM persona WHERE doc_id = doc_iden;
+	RETURN;
+	
 END;
-$$
-LANGUAGE plpgsql;
+$BODY$
+  LANGUAGE plpgsql VOLATILE
+  COST 100;
+
+Select * FROM consultar_persona3('1037638826');
+
+
 
 /*********************************************************************************************************************************************************************/
 

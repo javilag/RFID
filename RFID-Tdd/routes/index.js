@@ -2,10 +2,10 @@ var express = require('express');
 var router = express.Router();
 var pg = require('pg');
 var path = require('path');
-var conString = require(path.join(__dirname, '../', '../', 'RFID-Tdd/models/database.js'));
+var conString = require(path.join(__dirname, '../', '../', 'RFID/models/database.js'));
 
 
-//var connDB = require('../models/database.js');
+var connArduino = require('../models/conn-Arduino.js');
 
 /* GET home page. */
 
@@ -88,7 +88,7 @@ module.exports = router;
           return res.status(500).json({ success: false, data: err});
         }
         var query = client.query({
-          text: "select * from consultar_persona3($1)",
+          text: "Select * FROM consultar_persona($1)",
           values: [data.doc_id]});
 
           // Stream results back one row at a time
@@ -108,41 +108,42 @@ module.exports = router;
       });
     });
 
-    //como recibir una tab
+
     //post que envía el doc_id de la peronsa para consultar los registros asociados a la persona
-    router.post('/api/v1/RFID/recordInOut',function(req,res){
+    router.post('/api/v1/RFID/getInOut',function(req,res){
       var results = [];
-      var data = {
-        doc_id: req.body.doc_id};
+          var data = {
+            doc_id: req.body.doc_id};
 
-        // Get a Postgres client from the connection pool
-        pg.connect(conString, function(err, client, done) {
-          // Handle connection errors
-          if(err) {
-            done();
-            console.log(err);
-            return res.status(500).json({ success: false, data: err});
-          }
-          var query = client.query({
-            text: "select row_to_json(consultar_registros($1))",
-            values: [data.doc_id]});
+            // Get a Postgres client from the connection pool
+            pg.connect(conString, function(err, client, done) {
+              // Handle connection errors
+              if(err) {
+                done();
+                console.log(err);
+                return res.status(500).json({ success: false, data: err});
+              }
+              var query = client.query({
+                text: "SELECT * FROM consultar_registros($1);",
+                values: [data.doc_id]});
 
-            // Stream results back one row at a time
-          query.on('row', function(row, result) {
-            result.addRow(row);
-            console.log(result.rows[0]);
-            results = result.rows[0];
-          });
+                // Stream results back one row at a time
+              query.on('row', function(row) {
+                //result.addRow(row);
+                results.push(row);
+                console.log(results);
+                //results = result.rows;
+              });
 
-          // After all data is returned, close connection and return results
-          query.on('end', function() {
-            done();
-            return res.json(results);
-          });
-        });
+              // After all data is returned, close connection and return results
+              query.on('end', function() {
+                done();
+                return res.json(results);
+              });
+            });
     });
 
-          //post que envía el documento de identidad para eliminar todos los registros asociados a la persona
+    //post que envía el documento de identidad para eliminar todos los registros asociados a la persona
     router.post('/api/v1/RFID/deletePerson', function(req, res){
       var results =[];
       var data = {
@@ -167,20 +168,80 @@ module.exports = router;
       });
     });
 
-//          router.get('/api/v1/RFID/showPerson',function(req,res){
-//            var results = [];
-//            pg.connect(conString, function(err, client, done) {
-//                if(err) {
-//                  done();
-//                  console.log(err);
-//                }
-//                var query = client.query("select * from persona");
-//                query.on('row', function(row) {
-//                  results.push(row);
-//                });
-//                query.on('end', function() {
-//                  done();
-//                  return res.json(results);
-//                });
-//            });
-//          });
+    //get que permite realizar un reporte de las horas de mayor entrada a la universidad
+    router.get('/api/v1/RFID/maxInHour',function(req,res){
+      var results = [];
+      pg.connect(conString, function(err, client, done) {
+         if(err) {
+            done();
+            console.log(err);
+         }
+         var query = client.query("SELECT substr(hora,1,2) hora_repetida, COUNT(substr(hora,1,2)) maximo FROM registro_en_sa where tipo = 'ENTRADA'	GROUP BY hora_repetida ORDER BY maximo DESC LIMIT 3");
+         query.on('row', function(row) {
+            results.push(row);
+         });
+         query.on('end', function() {
+            done();
+            return res.json(results);
+        });
+     });
+   });
+
+
+   router.post('/api/v1/RFID/showPeople',function(req,res){
+       var results = [];
+       var data = {
+         cod_programa: req.body.cod_programa,
+         mes: req.body.mes
+       };
+       pg.connect(conString, function(err, client, done) {
+          if(err) {
+             done();
+             console.log(err);
+          }
+          var query = client.query({
+            text: "SELECT * FROM consultar_per_programaxmes($1,$2);",
+            values: [data.cod_programa, data.mes]
+          });
+          query.on('row', function(row) {
+             results.push(row);
+             console.log(results);
+          });
+          query.on('end', function() {
+             done();
+             return res.json(results);
+         });
+       });
+    });
+
+
+   router.post('/api/v1/RFID/recordInOut', function(req, res){
+     var results = [];
+     //var serial = connArduino.serialValue;
+
+     console.log("serial: " + serial);
+
+     pg.connect(conString, function(err, client, done) {
+         // Handle connection errors
+         if(err) {
+           done();
+           console.log(err);
+           return res.status(500).json({ success: false, data: err});
+         }
+
+         var query = client.query({
+              text: "select registro_persona($1)",
+              values: [serial]
+          });
+
+         query.on('row', function(row) {
+                   results.push(row);
+                 });
+
+         query.on('end', function() {
+             done();
+             return res.json(results);
+         });
+     });
+     console.log('El serial en index: ' + serial);
+   });
