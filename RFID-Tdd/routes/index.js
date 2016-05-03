@@ -2,10 +2,10 @@ var express = require('express');
 var router = express.Router();
 var pg = require('pg');
 var path = require('path');
-var conString = require(path.join(__dirname, '../', '../', 'RFID/models/database.js'));
+var conString = require(path.join(__dirname, '../', '../', 'RFID-Tdd/models/database.js'));
 
 
-var connArduino = require('../models/conn-Arduino.js');
+//var connArduino = require('../models/conn-Arduino.js');
 
 /* GET home page. */
 
@@ -216,12 +216,12 @@ module.exports = router;
     });
 
 
-  var connArduino = require('../models/conn-Arduino.js');
+  //var connArduino = require('../models/conn-Arduino.js');
 
    router.post('/api/v1/RFID/recordInOut', function(req, res){
      var results = [];
 
-     var serial = connArduino.serialValue;
+     //var serial = connArduino.serialValue;
 
      console.log("serial: " + serial);//Nunca se ejecuta
 
