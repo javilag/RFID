@@ -1,4 +1,3 @@
-
 //var connArduino = require('../models/conn-Arduino.js');
 
 angular.module('RFID', [])
@@ -11,15 +10,23 @@ angular.module('RFID', [])
 
 //createPerson ingresa una persona nueva a la BD
     $scope.createPerson = function(persona) {
+      if (persona == null) {
+        alert("No se pudo ingresar persona, verifique los campos obligatorios nuevamente");
+      }else{
         $http.post('/api/v1/RFID/createPerson', $scope.persona)//Este $scope.persona es el mismo de abajo?
             .then(function success(data) {
-                $scope.personas  = {};
-                $scope.personas  = data;
-                console.log(data);
-            },
+                if(data != null){
+                  $scope.personas  = {};
+                  $scope.personas  = data;
+                  console.log(data);
+                  alert("Se ingreso la persona exitosamente");
+
+                }
+              },
             function error(error) {
-                console.log('Error: ' + error);
+                  console.log('Error: ' + error);
             });
+      }
     };
 
 //getPerson obtiene la persona según su documento de identidad de la BD
@@ -50,15 +57,22 @@ angular.module('RFID', [])
 
 //deletePerson elimina todos los registros asociados a la persona de la BD
     $scope.deletePerson = function(persona) {
+      if(persona == null){
+        alert("No se pudo eliminar persona, verifique el documento de identidad");
+      }else{
       $http.post('/api/v1/RFID/deletePerson', $scope.persona)
         .then(function success(data) {
+          if(data!=null){
             $scope.personas  = {};
             $scope.personas  = data;
             console.log(data);
+            alert("Se elimino exitosamente la persona");
+          }
         },
         function error(data) {
             console.log('Error: ' + data);
         });
+      }
     };
 
 
