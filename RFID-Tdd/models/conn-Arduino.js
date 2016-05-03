@@ -13,16 +13,17 @@ myPort.on('open', onOpen);
 
 function onOpen(){
   console.log("Open conection");
+
     myPort.on('data', onData);
-  //var serial = onData(data);
+    function onData(data){
+      //console.log("On data: " +data);
+         serialValue = data;
+         console.log('El serial es: '+serialValue);
+         //module.exports = serialValue;
+    }
 }
 
-function onData(data){
-  //console.log("On data: " +data);
-     serialValue = data;
-     console.log('El serial es: '+serialValue);
-     //module.exports = serialValue;
-}
+
 
 
 

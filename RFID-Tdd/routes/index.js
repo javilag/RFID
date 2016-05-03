@@ -2,10 +2,10 @@ var express = require('express');
 var router = express.Router();
 var pg = require('pg');
 var path = require('path');
-var conString = require(path.join(__dirname, '../', '../', 'RFID-Tdd/models/database.js'));
+var conString = require(path.join(__dirname, '../', '../', 'RFID/models/database.js'));
 
 
-//var connArduino = require('../models/conn-Arduino.js');
+var connArduino = require('../models/conn-Arduino.js');
 
 /* GET home page. */
 
@@ -168,6 +168,7 @@ module.exports = router;
       });
     });
 
+
     //get que permite realizar un reporte de las horas de mayor entrada a la universidad
     router.get('/api/v1/RFID/maxInHour',function(req,res){
       var results = [];
@@ -215,11 +216,14 @@ module.exports = router;
     });
 
 
+  var connArduino = require('../models/conn-Arduino.js');
+
    router.post('/api/v1/RFID/recordInOut', function(req, res){
      var results = [];
-     //var serial = connArduino.serialValue;
 
-     console.log("serial: " + serial);
+     var serial = connArduino.serialValue;
+
+     console.log("serial: " + serial);//Nunca se ejecuta
 
      pg.connect(conString, function(err, client, done) {
          // Handle connection errors
@@ -243,5 +247,5 @@ module.exports = router;
              return res.json(results);
          });
      });
-     console.log('El serial en index: ' + serial);
+     console.log('El serial en index: ' + serial);//Nunca se ejecuta
    });

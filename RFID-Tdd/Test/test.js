@@ -61,5 +61,3 @@ it('Que se consulte la persona', function(done){
     done();// Siempre finalizar con done
   });
 });
-
-// TDD para la conexión.
