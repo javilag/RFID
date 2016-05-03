@@ -2,10 +2,10 @@ var express = require('express');
 var router = express.Router();
 var pg = require('pg');
 var path = require('path');
-var conString = require(path.join(__dirname, '../', '../', 'RFID/models/database.js'));
+var conString = require(path.join(__dirname, '../', '../', 'RFID-Tdd/models/database.js'));
 
 
-var connArduino = require('../models/conn-Arduino.js');
+//var connArduino = require('../models/conn-Arduino.js');
 
 /* GET home page. */
 
