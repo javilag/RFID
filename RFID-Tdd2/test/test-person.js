@@ -1,40 +1,30 @@
-
+var chai = require ('chai'); // modulo chai
+var chaiHttp = require ('chai-http'); // modulo chai-http para hacer peticiones.
 var expect = require("chai").expect;
-var personCtrl = require("../controllers/person/personController");
-var httpMocks = require('node-mocks-http');
+var app = require('../app');
 
-describe("Person tests", function(){
-  it('Debe enviar los datos de la persona', function(done){
-    var res = httpMocks.createResponse();
-    var req = httpMocks.createRequest({
-      body : {//: o = -->Documentacion HTTPMOCKS
-        doc: '1037638826',
-        nombre: 'Juan Jose',
-        genero : 'Masculino',
-        correo : 'correo',
-        tel : '3336213',
-        cel : '3046516645',
-        cod_tarjeta : '0001',
-        cod_universidad : '201217021010'
-      }
+
+chai.use(chaiHttp);
+
+describe('Agregar persona: ', function(){
+  it('Agregar una nueva persona');
+
+    it('Que se agregue una nueva persona', function(done){
+      chai.request(app).post('/api/v1/RFID/createPerson').send({
+
+        "doc_id":'3454',
+        "nombre":'omar',
+        "genero":'masculino',
+        "correo":'omarmartinez95@homtail.com',
+        "tel":'3366213',
+        "cel":'3046518850',
+        "cod_tarjeta":'0099',
+        "cod_universidad":'201337',
+        "programa":'001'
+        // poner todos  los datos del index.js
+      }).end(function(error, res){
+          expect(res.statusCode).to.be.equal(200);
+        done();// Siempre finalizar con done
+      });
     });
-
-    personCtrl.createPerson(req, res); //Define el callback
-      console.log(req.body);
-      expect(res.statusCode).to.be.equal(200);
-      expect(req.body.doc).to.be.a("String").and.not.equal("");
-      expect(req.body.nombre).to.be.a("String").and.not.equal("");
-      expect(req.body.genero).to.be.a("String").and.not.equal("");
-      expect(req.body.correo).to.be.a("String").and.not.equal("");
-      expect(req.body.tel).to.be.a("String").and.not.equal("");
-      expect(req.body.cel).to.be.a("String").and.not.equal("");
-      expect(req.body.cod_tarjeta).to.be.a("String").and.not.equal("");
-      expect(req.body.cod_universidad).to.be.a("String").and.not.equal("");
-      //NO ESTÁ GUARDANDO
-      //expect(res.) estado de que guardó
-      done();
-
-
-  });
-
 });
