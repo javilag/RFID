@@ -22,7 +22,7 @@
     <section>
       <div>
         <article>
-          <h2>Grafica de cantidad de estudiantes</h2>
+          <h2><center>Grafica de cantidad de estudiantes</center></h2>
 
 <canvas id="lineChart" height="59" width="255" style="width: 255px; height: 59px;"></canvas>
   <script>
@@ -82,10 +82,11 @@
         </article>
       </div>
         <article>
+          <center>
         <h2>Consulta de personas por programa</h2>
         <br>
         Programa:
-        <select name="programas" ng-model= "personas.cod_programa">
+        <select name="programas" class="form-control" ng-model= "personas.cod_programa">
             <option value="001">Ingenieria de Sistemas</option>
             <option value="002">Ingenieria Electronica</option>
             <option value="003">Tencologia de Sistemas</option>
@@ -95,7 +96,7 @@
             <option value="007">Contaduria Publica</option>
         </select>
         Mes:
-        <select name="mes" ng-model= "personas.mes">
+        <select name="mes" class="form-control" ng-model= "personas.mes">
             <option value=" ">Seleccione Mes</option>
             <option value="01">Enero</option>
             <option value="02">Febrero</option>
@@ -110,11 +111,15 @@
             <option value="11">Noviembre</option>
             <option value="12">Diciembre</option>
         </select>
-        <button style="background:#448E49" type="submit" class="btn btn-primary btn-lg" ng-click="showPeoplexmonth(personas)">Consultar</button>
+      </center>
+        <br>
+        <center><button style="background:#448E49" type="submit" class="btn btn-primary btn-lg" ng-click="showPeoplexmonth(personas)">Consultar</button></center>
+        <br>
       </br>
       </article>
       <article>
-        <table id= "showit"  border="1" width="90%" height="90%">
+        <div class="table-responsive">
+        <table id= "showit"  class="table">
           <tr>
             <td><b>     Doc_Id     </b></td>
             <td><b>     Nombre     </b></td>
@@ -132,11 +137,15 @@
             <td>{{persona.rhora}}</td>
           </tr>
         </table>
+      </div>
       </article>
       <article>
-        <h2>Reporte de las horas de mayor ingreso</h2>
-        <button style="background:#448E49" type="submit" class="btn btn-primary btn-lg" ng-click="maxInHour()">Generar Reporte</button>
-        <table id= "showit"  border="1" width="50%" height="50%">
+        <center><h2>Reporte de las horas de mayor ingreso</h2></center>
+        <br>
+        <center><button style="background:#448E49" type="submit" class="btn btn-primary btn-lg" ng-click="maxInHour()">Generar Reporte</button></center>
+        <br>
+        <div class="table-responsive">
+        <table id= "showit"  class="table">
           <tr>
             <td><b>     Hora     </b></td>
             <td><b>     Cantidad     </b></td>
@@ -145,6 +154,8 @@
             <td>{{reporteHora.hora_repetida}}</td>
             <td>{{reporteHora.maximo}}</td>
           </tr>
+        </table>
+      </div>
       </article>
     </section>
   </body>
