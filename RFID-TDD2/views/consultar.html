@@ -18,10 +18,14 @@
           <h3><b>Consultar Persona:</b></h3>
           <div>
             <input type="text" class="form-control input-lg" placeholder="Add a Doc_id..." ng-model= "persona.doc_id">
+            <br>
+            <center>
             <button style="background:#448E49" type="submit" class="btn btn-primary btn-lg" ng-click="getPerson(persona)">Buscar persona</button>
             <button style="background:#448E49" type="submit" class="btn btn-primary btn-lg" ng-click="getInOut(persona)">Buscar registros</button>
+          </center>
           </div>
-          <input id="search" size="40" type="search" placeholder="Introduzca los parametros de busqueda" ng-model= "search" id= "search"/>
+          <br>
+          <center><input class="form-control input-lg" type="search" placeholder="Introduzca los parametros de busqueda" ng-model= "search" id= "search"/></center>
           <br>
           <br>
           <div class="table-responsive">

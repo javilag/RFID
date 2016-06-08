@@ -2,7 +2,6 @@ var express = require('express');
 var router = express.Router();
 var pg = require('pg');
 var path = require('path');
-var personCtrl = require('../controllers/person/personController.js');
 var conString = require(path.join(__dirname, '../', '../', 'RFID-Tdd2/models/database.js'));
 
 
